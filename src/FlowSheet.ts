@@ -22,7 +22,8 @@ export class FlowSheet {
     y: number,
     width: number,
     rendererWidth: number,
-    rendererHeight: number) {
+    rendererHeight: number,
+  ) {
     const renderer = new Flow.Renderer(div, Flow.Renderer.Backends.SVG);
     this.ligature = [];
     // Configure the rendering context.
@@ -42,14 +43,14 @@ export class FlowSheet {
     const VF = Flow;
     const tooBig = this.isTooBig(figure);
     if (!tooBig) {
-      this.secuence = this.secuence + valor + (dot * valor / 2);
+      this.secuence = this.secuence + valor + (dot * valor) / 2;
       this.setNotes(figure, tone, high, this.secuence, puntuacion, dot, isNatural);
     }
 
     this.drawStaves();
 
     const lon = this.mapeado.size;
-    const pentagramacompleto = (lon % 5) === 0;
+    const pentagramacompleto = lon % 5 === 0;
 
     const compascompleto = this.isStaveComplete();
 
@@ -70,7 +71,7 @@ export class FlowSheet {
       const figure = note.getDuration();
       let valor = this.figures[figure];
       if (note.isDotted()) {
-        valor = valor + (valor / 2);
+        valor = valor + valor / 2;
       }
       this.secuence = this.secuence - valor;
       this.deleteNotes();
@@ -117,11 +118,11 @@ export class FlowSheet {
     this.drawLigatures();
   }
 
-    /*
-    * Add two numbers
-    * @param number1 First number to add
-    * @param number2 Second number to add
-    */
+  /*
+   * Add two numbers
+   * @param number1 First number to add
+   * @param number2 Second number to add
+   */
   public initSheet() {
     this.stave = this.createFirstStaveSheet();
     this.mapeado.set(this.stave, new Flow.Voice({ num_beats: 0, beat_value: 4 }));
@@ -133,7 +134,7 @@ export class FlowSheet {
     const coun = Math.trunc(lon / 5) * 120;
     this.context.setFont('Arial', 10, 0).setBackgroundFillStyle('#eed');
     // Create a stave of width 400 at position 10, 40 on the canvas.
-    this.stave = new Flow.Stave(80, 40 + (coun), 360);
+    this.stave = new Flow.Stave(80, 40 + coun, 360);
     this.stave.setText(this.instrument.name, Flow.Modifier.Position.LEFT);
     // Add a clef, time  adn key signature .
     this.stave.addClef('treble').addTimeSignature(this.musicalTime.numerator + '/' + this.musicalTime.denominator);
@@ -161,7 +162,6 @@ export class FlowSheet {
     }
   }
   public nextStave() {
-
     const staveslenth = this.mapeado.size % 5;
     const lon = this.mapeado.size;
     let position = 410;
@@ -169,22 +169,21 @@ export class FlowSheet {
     if (staveslenth + 1 === 1 || this.mapeado.size === 1) {
       position = 440;
     } else {
-      position = 770 + (330 * (staveslenth - 2));
+      position = 770 + 330 * (staveslenth - 2);
     }
     const coun = Math.trunc(lon / 5) * 120;
-    const newstave = new Flow.Stave(position, 40 + (coun), width);
+    const newstave = new Flow.Stave(position, 40 + coun, width);
     newstave.setContext(this.context).draw();
     this.mapeado.set(newstave, new Flow.Voice({ num_beats: 4, beat_value: 4 }));
   }
   public isStaveComplete() {
-
     let totalduration = 0;
 
     for (const note of this.notes) {
       const fig = note.getDuration();
       let duration = this.figures[fig];
       if (note.isDotted()) {
-        duration = duration + (duration / 2);
+        duration = duration + duration / 2;
       }
       totalduration = totalduration + duration;
     }
@@ -198,7 +197,7 @@ export class FlowSheet {
       const fig = note.getDuration();
       let duration = this.figures[fig];
       if (note.isDotted()) {
-        duration = duration + (duration / 2);
+        duration = duration + duration / 2;
       }
       totalduration = totalduration + duration;
     }
@@ -206,7 +205,6 @@ export class FlowSheet {
     return b;
   }
   public deleteNotes() {
-
     this.notes.splice(this.notes.length - 1);
     this.context.clear();
     this.voice = new Flow.Voice({ num_beats: this.secuence, beat_value: 4 });
@@ -229,7 +227,7 @@ export class FlowSheet {
     const figure = (note as any).duration;
     let valor = this.figures[figure];
     if ((note as any).isDotted()) {
-      valor = valor + (valor / 2);
+      valor = valor + valor / 2;
     }
     const secuence = this.limit - valor;
     this.deleteNotes();
@@ -267,10 +265,16 @@ export class FlowSheet {
     this.mapeado.set(laststav, voice);
     this.context.clear();
     this.drawStaves();
-
   }
-  public setNotes(figure: string, tone: string, high: string, secuence: number, puntuacion: number,
-                  dot: number, natural: boolean) {
+  public setNotes(
+    figure: string,
+    tone: string,
+    high: string,
+    secuence: number,
+    puntuacion: number,
+    dot: number,
+    natural: boolean,
+  ) {
     let note: any;
     let pos = 4;
     // Si es silencio
@@ -281,8 +285,13 @@ export class FlowSheet {
     }
     // Comprobación para colocar la plica
     if (+high >= 5 || (tone.includes('B') && +high === 4)) {
-      note = new Flow.StaveNote({ clef: 'treble', keys: [tone + '/' + high], duration: figure,
-                                  stem_direction: -1, dots: dot });
+      note = new Flow.StaveNote({
+        clef: 'treble',
+        keys: [tone + '/' + high],
+        duration: figure,
+        stem_direction: -1,
+        dots: dot,
+      });
       pos = 3;
     } else {
       note = new Flow.StaveNote({ clef: 'treble', keys: [tone + '/' + high], duration: figure, dots: dot });

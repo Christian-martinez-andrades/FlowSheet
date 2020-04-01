@@ -2,31 +2,41 @@
   "name": "FlowSheet",
   "version": "0.0.1",
   "description": "Library to work with VexFlow without needing to know how it works",
-  "main": "./dist/FlowSheet.min.js",
-  "types": "./dist/FlowSheet.d.ts",
+  "main": "./lib/FlowSheet.js",
+  "types": "./lib/FlowSheet.d.ts",
   "scripts": {
-    "dev": "npm run tslint && tsc -m es6 --outDir dist",
-    "dev:watch": "nodemon --exec 'npm run dev || exit 1'",
-    "tslint": "tslint --project .",
-    "build": "npm run dev && uglifyjs ./dist/FlowSheet.js -o ./dist/FlowSheet.min.js",
-    "test": "npm run clean && jest && npm run demo:test && npm run clean",
-    "test:coverage": "npm run clean && jest --coverage && npm run demo:test && npm run clean",
-    "clean": "rm -rf dist",
-    "demo:test": "npm run build && cd demo && npm install && npm run add-self && npm test"
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Christian-martinez-andrades/FlowSheet"
+  },
+  "homepage": "https://github.com/Christian-martinez-andrades/FlowSheet",
   "author": "christianmartinez@hotmail.es",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^23.3.7",
+    "@types/node": "^13.9.8",
     "@types/vexflow": "^1.2.33",
     "jest": "^23.6.0",
     "nodemon": "^1.17.5",
+    "prettier": "^2.0.2",
     "ts-jest": "^23.10.4",
     "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^2.9.2",
     "uglify-js": "^3.4.9"
   },
   "dependencies": {
     "vexflow": "^1.2.90"
-  }
+  },
+  "files": [
+    "lib/**/*"
+  ]
 }
