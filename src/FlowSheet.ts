@@ -17,13 +17,14 @@ export class FlowSheet {
     public musicalTime: any,
     public tonality: any,
     public figures: any,
-    renderer: Flow.Renderer,
+    div: HTMLElement,
     x: number,
     y: number,
     width: number,
     rendererWidth: number,
     rendererHeight: number,
   ) {
+    const renderer = new Flow.Renderer(div, Flow.Renderer.Backends.SVG);
     this.ligature = [];
     // Configure the rendering context.
     renderer.resize(rendererWidth, rendererHeight);
