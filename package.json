@@ -1,5 +1,5 @@
 {
-  "name": "FlowSheet",
+  "name": "flowsheet",
   "version": "0.0.1",
   "description": "Library to work with VexFlow without needing to know how it works",
   "main": "./lib/FlowSheet.js",
