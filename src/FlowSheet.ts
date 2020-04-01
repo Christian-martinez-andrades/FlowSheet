@@ -17,17 +17,16 @@ export class FlowSheet {
     public musicalTime: any,
     public tonality: any,
     public figures: any,
-    div: HTMLElement,
+    renderer: Flow.Renderer,
     x: number,
     y: number,
     width: number,
     rendererWidth: number,
     rendererHeight: number,
   ) {
-    const renderer = new Flow.Renderer(div, Flow.Renderer.Backends.SVG);
     this.ligature = [];
     // Configure the rendering context.
-    renderer.resize(1800, 8000);
+    renderer.resize(rendererWidth, rendererHeight);
     this.context = renderer.getContext();
     this.mapeado = new Map<Flow.Stave, Flow.Voice>();
     this.stave = new Flow.Stave(x, y, width);
@@ -331,4 +330,5 @@ export class FlowSheet {
     const laststav = Array.from(this.mapeado.keys())[long];
     this.mapeado.set(laststav, this.voice);
   }
+  
 }
