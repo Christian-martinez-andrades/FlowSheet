@@ -1,6 +1,6 @@
 {
   "name": "flowsheet",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Library to work with VexFlow without needing to know how it works",
   "main": "./lib/FlowSheet.js",
   "types": "./lib/FlowSheet.d.ts",
