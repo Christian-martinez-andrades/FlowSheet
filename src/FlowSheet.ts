@@ -118,7 +118,6 @@ export class FlowSheet {
     this.drawLigatures();
   }
 
-
   public onStaveConverter(staves: any[], message: any) {
     let voice: any;
     let notes: any[];
@@ -137,16 +136,16 @@ export class FlowSheet {
         if (staveslenth + 1 === 1 || this.mapeado.size === 1) {
           position = 440;
         } else {
-          position = 770 + (330 * (staveslenth - 2));
+          position = 770 + 330 * (staveslenth - 2);
         }
         const coun = Math.trunc(lon / 5) * 120;
         if (i % 5 === 0) {
           nextStaveFlow = this.createFirstStaveSheet();
         } else {
-          nextStaveFlow = new Flow.Stave(position, 40 + (coun), width);
+          nextStaveFlow = new Flow.Stave(position, 40 + coun, width);
         }
 
-        this.mapeado.set(nextStaveFlow, new Flow.Voice({ num_beats: 4, beat_value: 4 }));
+        this.mapeado.set(nextStaveFlow, new Flow.Voice({ num_beats: this.limit, beat_value: 4 }));
       }
 
       for (const note of notes) {
@@ -155,18 +154,20 @@ export class FlowSheet {
         } else {
           dot = 0;
         }
-        this.setNotes(note.figure.abbreviation, note.tone.name, note.high, voice.limit, note.puntuation, dot, note.isNatural);
+        this.setNotes(
+          note.figure.abbreviation,
+          note.tone.name,
+          note.high,
+          voice.limit,
+          note.puntuation,
+          dot,
+          note.isNatural,
+        );
       }
       notesFlow = [];
       i++;
-
     }
   }
-
-
-
-
-
 
   /*
    * Add two numbers
@@ -381,5 +382,4 @@ export class FlowSheet {
     const laststav = Array.from(this.mapeado.keys())[long];
     this.mapeado.set(laststav, this.voice);
   }
-
 }
