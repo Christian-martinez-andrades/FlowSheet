@@ -112,11 +112,61 @@ export class FlowSheet {
       this.ligature = [];
     }
   }
-  public onFinish(event: Event) {
+  public onFinish() {
     this.finish();
     this.isFinal = true;
     this.drawLigatures();
   }
+
+
+  public onStaveConverter(staves: any[], message: any) {
+    let voice: any;
+    let notes: any[];
+    let notesFlow: Flow.StaveNote[] = [];
+    let dot = 0;
+    let nextStaveFlow = this.stave;
+    let i = 0;
+    for (const stave of staves) {
+      voice = stave.voice;
+      notes = voice.notes;
+      if (i !== 0) {
+        const staveslenth = this.mapeado.size % 5;
+        const lon = this.mapeado.size;
+        let position = 410;
+        const width = 330;
+        if (staveslenth + 1 === 1 || this.mapeado.size === 1) {
+          position = 440;
+        } else {
+          position = 770 + (330 * (staveslenth - 2));
+        }
+        const coun = Math.trunc(lon / 5) * 120;
+        if (i % 5 === 0) {
+          nextStaveFlow = this.createFirstStaveSheet();
+        } else {
+          nextStaveFlow = new Flow.Stave(position, 40 + (coun), width);
+        }
+
+        this.mapeado.set(nextStaveFlow, new Flow.Voice({ num_beats: 4, beat_value: 4 }));
+      }
+
+      for (const note of notes) {
+        if (note.isDotted) {
+          dot = 1;
+        } else {
+          dot = 0;
+        }
+        this.setNotes(note.figure.abbreviation, note.tone.name, note.high, voice.limit, note.puntuation, dot, note.isNatural);
+      }
+      notesFlow = [];
+      i++;
+
+    }
+  }
+
+
+
+
+
 
   /*
    * Add two numbers
@@ -331,5 +381,5 @@ export class FlowSheet {
     const laststav = Array.from(this.mapeado.keys())[long];
     this.mapeado.set(laststav, this.voice);
   }
-  
+
 }
