@@ -26,6 +26,7 @@ export class FlowSheet {
   ) {
     const renderer = new Flow.Renderer(div, Flow.Renderer.Backends.SVG);
     this.ligature = [];
+    this.ligatures = [];
     // Configure the rendering context.
     renderer.resize(rendererWidth, rendererHeight);
     this.context = renderer.getContext();
@@ -37,6 +38,9 @@ export class FlowSheet {
     this.secuence = 0;
     this.limit = this.musicalTime.numerator * (4 / this.musicalTime.denominator);
   }
+  public setFigures(figures: any) {
+    this.figures = figures;
+  }
   public onAddNote(figure: string, tone: string, high: string, dot: number, puntuacion: number, isNatural: boolean) {
     const valor = this.figures[figure];
     this.context.clear();
@@ -46,9 +50,10 @@ export class FlowSheet {
       this.secuence = this.secuence + valor + (dot * valor) / 2;
       this.setNotes(figure, tone, high, this.secuence, puntuacion, dot, isNatural);
     }
-
     this.drawStaves();
-
+    this.followAddNotes();
+  }
+  public followAddNotes() {
     const lon = this.mapeado.size;
     const pentagramacompleto = lon % 5 === 0;
 
@@ -203,14 +208,21 @@ export class FlowSheet {
     for (const stav of keys) {
       stav.setContext(this.context).draw();
       this.voice = this.mapeado.get(stav);
-      const formatter = new Flow.Formatter().joinVoices([this.voice]).format([this.voice], 200);
       // Autoformatear las plicas de las corcheas
+      /*
+      this.secuence = this.calculateTotalDuration();
+      const voz = new Flow.Voice({ num_beats: this.secuence, beat_value: 4 });
+      voz.addTickables(this.voice.getTickables());
+      */
+      const formatter = new Flow.Formatter().joinVoices([this.voice]);
+      formatter.format([this.voice], 200);
       const beams = Flow.Beam.generateBeams(this.voice.getTickables() as any);
       this.voice.draw(this.context, stav);
       beams.forEach((beam) => {
         beam.setContext(this.context).draw();
       });
     }
+
   }
   public nextStave() {
     const staveslenth = this.mapeado.size % 5;
@@ -254,6 +266,19 @@ export class FlowSheet {
     }
     const b = totalduration > this.limit;
     return b;
+  }
+  public calculateTotalDuration() {
+    let totalduration = 0;
+
+    for (const note of this.notes) {
+      const fig = note.getDuration();
+      let duration = this.figures[fig];
+      if (note.isDotted()) {
+        duration = duration + duration / 2;
+      }
+      totalduration = totalduration + duration;
+    }
+    return totalduration;
   }
   public deleteNotes() {
     this.notes.splice(this.notes.length - 1);
