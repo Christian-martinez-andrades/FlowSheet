@@ -126,7 +126,7 @@ export class FlowSheet {
   public onStaveConverter(staves: any[], message: any) {
     let voice: any;
     let notes: any[];
-    let notesFlow: Flow.StaveNote[] = [];
+    this.notes = [];
     let dot = 0;
     let nextStaveFlow = this.stave;
     let i = 0;
@@ -169,7 +169,7 @@ export class FlowSheet {
           note.isNatural,
         );
       }
-      notesFlow = [];
+      this.notes = [];
       i++;
     }
   }
