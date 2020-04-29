@@ -6,7 +6,7 @@ export class FlowSheet {
   public context: Vex.IRenderContext;
   public stave: Flow.Stave;
   public voice: Flow.Voice;
-  public notes: Flow.StaveNote[];
+  public notes: any[];
   public ligatures: any;
   public isFinal: boolean;
   public secuence: number;
@@ -85,7 +85,7 @@ export class FlowSheet {
       }
     } else {
       if (this.mapeado.size > 1) {
-        this.secuence = this.deleteNotesBeforeStave();
+        this.deleteNotesBeforeStave();
       }
     }
   }
@@ -293,7 +293,7 @@ export class FlowSheet {
   public deleteNotesBeforeStave() {
     this.context.clear();
     let long = this.mapeado.size - 1;
-    let laststav = Array.from(this.mapeado.keys())[long];
+    let laststav= Array.from(this.mapeado.keys())[long];
     this.mapeado.delete(laststav);
     long = this.mapeado.size - 1;
     laststav = Array.from(this.mapeado.keys())[long];
@@ -305,16 +305,10 @@ export class FlowSheet {
     if ((note as any).isDotted()) {
       valor = valor + valor / 2;
     }
-    const secuence = this.limit - valor;
+    this.secuence = this.limit - valor;
+    this.notes = notesTick;
     this.deleteNotes();
-    let sec = 0;
-    for (const not of notesTick) {
-      const high = (not as any).keyProps[0].octave;
-      const tone = (not as any).keyProps[0].key;
-      sec = sec + this.figures[figure];
-      this.setNotes(figure, tone, high, secuence, 0, 0, false);
-    }
-    return sec;
+    this.drawStaves();
   }
   public drawLigature() {
     const Curve = Flow.Curve;
